@@ -25,9 +25,10 @@ jobs:
     - name: Build and push Docker image
       uses: docker/build-push-action@v3
       with:
-        context: .
+        context: ./my-app
+        file: ./my-app/Dockerfile
         push: true
-        tags: yourdockerhubusername/your-repo-name:latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/your-repo-name:latest
 
   deploy:
     needs: build
@@ -49,5 +50,5 @@ jobs:
 
     - name: Update Kubernetes deployment
       run: |
-        kubectl set image deployment/your-deployment your-container=yourdockerhubusername/your-repo-name:latest
+        kubectl set image deployment/your-deployment your-container=${{ secrets.DOCKER_USERNAME }}/your-repo-name:latest
         kubectl rollout status deployment/your-deployment
