@@ -28,7 +28,7 @@ jobs:
         context: ./my-app
         file: ./my-app/Dockerfile
         push: true
-        tags: ${{ secrets.DOCKER_USERNAME }}/your-repo-name:latest
+        tags: ${{ secrets.DOCKER_USERNAME }}/registry.digitalocean.com/testekubernerts/my-app:latest
 
   deploy:
     needs: build
@@ -50,5 +50,5 @@ jobs:
 
     - name: Update Kubernetes deployment
       run: |
-        kubectl set image deployment/your-deployment your-container=${{ secrets.DOCKER_USERNAME }}/your-repo-name:latest
-        kubectl rollout status deployment/your-deployment
+        kubectl set image deployment/my-app-deployment your-container=${{ secrets.DOCKER_USERNAME }}/registry.digitalocean.com/testekubernerts/my-app:latest
+        kubectl rollout status deployment/my-app-deployment
