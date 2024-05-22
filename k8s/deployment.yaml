@@ -17,3 +17,7 @@ spec:
         image: registry.digitalocean.com/testekubernerts/my-app:latest
         ports:
         - containerPort: 3000
+        resources:
+          limits:
+            cpu: "0.5"
+            memory: "512Mi"

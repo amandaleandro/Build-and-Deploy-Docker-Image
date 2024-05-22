@@ -50,5 +50,6 @@ jobs:
 
     - name: Update Kubernetes deployment
       run: |
-        kubectl set image deployment/my-app-deployment your-container=${{ secrets.DOCKER_USERNAME }}/registry.digitalocean.com/testekubernerts/my-app:latest
+        kubectl apply -f deployment.yaml  # Aplicar manifestos de Kubernetes em vez de usar kubectl set image
         kubectl rollout status deployment/my-app-deployment
+
