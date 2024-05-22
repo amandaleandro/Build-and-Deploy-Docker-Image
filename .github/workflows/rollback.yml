@@ -1,0 +1,27 @@
+name: Rollback Deployment
+
+on:
+  workflow_dispatch: # Permite disparar manualmente o rollback
+
+jobs:
+  rollback:
+    runs-on: ubuntu-latest
+
+    steps:
+    - name: Checkout repository
+      uses: actions/checkout@v2
+
+    - name: Set up kubectl
+      uses: azure/setup-kubectl@v1
+      with:
+        version: 'latest'
+
+    - name: Configure kubectl
+      run: |
+        echo "${{ secrets.KUBE_CONFIG }}" > k8s_config
+        export KUBECONFIG=k8s_config
+
+    - name: Rollback Kubernetes deployment
+      run: |
+        kubectl rollout undo deployment/your-deployment
+        kubectl rollout status deployment/your-deployment
