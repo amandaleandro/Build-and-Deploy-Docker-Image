@@ -57,7 +57,7 @@ jobs:
           host: ${{ secrets.DROPLET_HOST }}
           username: ${{ secrets.DROPLET_USERNAME }}
           key: ${{ secrets.DROPLET_SSH_KEY }}
-          target: /home/${{ secrets.DROPLET_USERNAME }}/image.tar
+          target: /home/image.tar
           source: image.tar
 
       # Passo 9: Carregar a imagem Docker no Droplet
@@ -69,4 +69,3 @@ jobs:
           docker load -i /home/${{ secrets.DROPLET_USERNAME }}/image.tar
           docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
           EOF
-
