@@ -1,4 +1,4 @@
-name: Build and Deploy Docker Image from External Repo
+name: Build and Deploy Docker Image
 
 on:
   push:
@@ -10,15 +10,8 @@ jobs:
     runs-on: ubuntu-latest
 
     steps:
-      - name: Checkout primary repo
+      - name: Checkout repository
         uses: actions/checkout@v2
-
-      - name: Checkout external repo with Dockerfile
-        uses: actions/checkout@v2
-        with:
-          repository: usuario/external-repo
-          path: external-repo
-          token: ${{ secrets.GITHUB_TOKEN }}
 
       - name: Set up Docker Buildx
         uses: docker/setup-buildx-action@v2
@@ -34,13 +27,13 @@ jobs:
         run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Verify Dockerfile presence
-        run: ls -la external-repo
+        run: ls -la
 
       - name: Build Docker image
         run: |
           IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}
           IMAGE_TAG=${{ env.GITHUB_SHA_SHORT }}
-          docker build -t $IMAGE_NAME:$IMAGE_TAG -f external-repo/Dockerfile external-repo
+          docker build -t $IMAGE_NAME:$IMAGE_TAG .
 
       - name: Save Docker image to tar file
         run: |
@@ -59,7 +52,7 @@ jobs:
 
       - name: Load Docker image on Droplet
         run: |
-          ssh -i ${{ secrets.DROPLET_SSH_KEY }} ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << EOF
+          ssh -i ${{ secrets.DROPLET_SSH_KEY }} ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << 'EOF'
           IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}
           IMAGE_TAG=${{ env.GITHUB_SHA_SHORT }}
           docker load -i /home/${{ secrets.DROPLET_USERNAME }}/image.tar
