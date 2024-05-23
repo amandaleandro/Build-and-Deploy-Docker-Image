@@ -27,13 +27,13 @@ jobs:
         run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
       - name: Verify Dockerfile presence
-        run: ls -la
+        run: ls -la my-app/dockerfile
 
       - name: Build Docker image
         run: |
           IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}
           IMAGE_TAG=${{ env.GITHUB_SHA_SHORT }}
-          docker build -t $IMAGE_NAME:$IMAGE_TAG .
+          docker build -t $IMAGE_NAME:$IMAGE_TAG -f my-app/dockerfile my-app
 
       - name: Save Docker image to tar file
         run: |
