@@ -66,6 +66,6 @@ jobs:
           ssh -i ${{ secrets.DROPLET_SSH_KEY }} ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} << 'EOF'
           IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}
           IMAGE_TAG=${{ env.GITHUB_SHA_SHORT }}
-          docker load -i /home/${{ secrets.DROPLET_USERNAME }}/image.tar
+          docker load -i /home/image.tar
           docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
           EOF
