@@ -30,7 +30,7 @@ jobs:
       # Passo 4: Obter SHA abreviado do commit atual
       - name: Get short SHA
         id: vars
-        run: echo "DOCKER_TAG_NAME=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+        run: echo "DOCKER_TAG_NAME=$(echo $DOCKER_TAG_NAME | cut -c1-7)" >> $GITHUB_ENV
 
       # Passo 5: Verificar a presença do Dockerfile
       - name: Verify Dockerfile presence
