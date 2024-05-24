@@ -28,6 +28,5 @@ jobs:
           target: /home/${{ secrets.DROPLET_USERNAME }}/image.tar
           source: image.tar
 
-      - name: Load Docker image on Droplet
-        run: |
-          ssh -o StrictHostKeyChecking=no -i ${{ secrets.DROPLET_SSH_KEY }} ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} 'docker load -i /home/${{ secrets.DROPLET_USERNAME }}/image.tar'
+      - name: Move Docker image to accessible directory
+        run: ssh -o StrictHostKeyChecking=no -i ${{ secrets.DROPLET_SSH_KEY }} ${{ secrets.DROPLET_USERNAME }}@${{ secrets.DROPLET_HOST }} 'mv /home/${{ secrets.DROPLET_USERNAME }}/image.tar /opt/docker/image.tar'
