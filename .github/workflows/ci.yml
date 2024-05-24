@@ -30,7 +30,7 @@ jobs:
       # Passo 4: Obter SHA abreviado do commit atual
       - name: Get short SHA
         id: vars
-        run: echo "GITHUB_SHA_SHORT=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
+        run: echo "DOCKER_TAG_NAME=$(echo $GITHUB_SHA | cut -c1-7)" >> $GITHUB_ENV
 
       # Passo 5: Verificar a presença do Dockerfile
       - name: Verify Dockerfile presence
@@ -40,14 +40,14 @@ jobs:
       - name: Build Docker image
         run: |
           IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}
-          IMAGE_TAG=${{ env.GITHUB_SHA_SHORT }}
+          IMAGE_TAG=${{ env.DOCKER_TAG_NAME }}
           docker build -t $IMAGE_NAME:$IMAGE_TAG -f my-app/dockerfile my-app
 
       # Passo 7: Salvar a imagem Docker em um arquivo tar
       - name: Save Docker image to tar file
         run: |
           IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}
-          IMAGE_TAG=${{ env.GITHUB_SHA_SHORT }}
+          IMAGE_TAG=${{ env.DOCKER_TAG_NAME }}
           docker save $IMAGE_NAME:$IMAGE_TAG -o image.tar
 
       # Passo 8: Copiar a imagem Docker para o Droplet
@@ -65,7 +65,7 @@ jobs:
         run: |
           ssh -i "${{ secrets.DROPLET_SSH_KEY }}" "${{ secrets.DROPLET_USERNAME }}"@"${{ secrets.DROPLET_HOST }}" << 'EOF'
           IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}
-          IMAGE_TAG=${{ env.GITHUB_SHA_SHORT }}
+          IMAGE_TAG=${{ env.DOCKER_TAG_NAME }}
           docker load -i /home/image.tar
           docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
           EOF
