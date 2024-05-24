@@ -1,4 +1,4 @@
-name: Build and Deploy Docker Image
+name: Construir e Implantar Imagem Docker
 
 on:
   push:
@@ -6,24 +6,24 @@ on:
       - main
 
 jobs:
-  build-and-deploy:
+  construir-e-implantar:
     runs-on: ubuntu-latest
 
     steps:
       # Etapa 1: Verificação do Repositório
-      - name: Checkout repository
+      - name: Verificar repositório
         uses: actions/checkout@v2
 
       # Etapa 2: Construção da Imagem Docker
-      - name: Build Docker image
+      - name: Construir imagem Docker
         run: docker build -t myapp:latest -f ./my-app/Dockerfile ./my-app
 
       # Etapa 3: Salvando a Imagem Docker em um Arquivo TAR
-      - name: Save Docker image to tar file
+      - name: Salvar imagem Docker em arquivo TAR
         run: docker save myapp:latest -o image.tar
 
       # Etapa 4: Copiando a Imagem Docker para o Droplet
-      - name: Copy Docker image to Droplet
+      - name: Copiar imagem Docker para o Droplet
         uses: appleboy/scp-action@v0.1.3
         with:
           host: ${{ secrets.DROPLET_HOST }}
@@ -31,3 +31,11 @@ jobs:
           key: ${{ secrets.DROPLET_SSH_KEY }}
           target: /home/${{ secrets.DROPLET_USERNAME }}/image.tar
           source: image.tar
+
+      # Etapa 5: Carregar a Imagem Docker do Arquivo TAR
+      - name: Carregar imagem Docker a partir do arquivo TAR
+        run: docker load -i image.tar
+
+      # Etapa 6: Verificar se a Imagem Docker foi carregada corretamente
+      - name: Verificar se a imagem Docker está carregada
+        run: docker images | grep myapp
