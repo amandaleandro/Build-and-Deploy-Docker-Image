@@ -1,6 +1,5 @@
 name: Build and Deploy Docker Image
 
-# Este workflow é acionado sempre que há um push para o branch main do repositório.
 on:
   push:
     branches:
@@ -46,8 +45,12 @@ jobs:
 
       # Passo 7: Carregar a imagem Docker no Droplet e executar o container
       - name: Load and run Docker image on Droplet
+        env:
+          DROPLET_SSH_KEY: ${{ secrets.DROPLET_SSH_KEY }}
         run: |
-          ssh -o StrictHostKeyChecking=no -i "${{ secrets.DROPLET_SSH_KEY }}" "${{ secrets.DROPLET_USERNAME }}"@"${{ secrets.DROPLET_HOST }}" << 'EOF'
+          echo "${DROPLET_SSH_KEY}" > /tmp/key
+          chmod 600 /tmp/key
+          ssh -o StrictHostKeyChecking=no -i /tmp/key "${{ secrets.DROPLET_USERNAME }}"@"${{ secrets.DROPLET_HOST }}" << 'EOF'
           docker load -i /home/${{ secrets.DROPLET_USERNAME }}/image.tar
           docker stop myapp || true
           docker rm myapp || true
