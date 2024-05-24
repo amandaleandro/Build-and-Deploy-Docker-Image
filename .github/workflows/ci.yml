@@ -43,23 +43,29 @@ jobs:
           target: /home/${{ secrets.DROPLET_USERNAME }}/image.tar
           source: image.tar
 
-      # Passo 7: Instalar Docker no Droplet (caso não esteja instalado)
-      - name: Install Docker on Droplet
+      # Passo 7: Verificar e instalar Docker no Droplet (se necessário)
+      - name: Check and install Docker on Droplet
         env:
           DROPLET_SSH_KEY: ${{ secrets.DROPLET_SSH_KEY }}
         run: |
           echo "${DROPLET_SSH_KEY}" > /tmp/key
           chmod 600 /tmp/key
           ssh -o StrictHostKeyChecking=no -i /tmp/key "${{ secrets.DROPLET_USERNAME }}"@"${{ secrets.DROPLET_HOST }}" << 'EOF'
-          sudo apt-get update
-          sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
-          curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-          sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
-          sudo apt-get update
-          sudo apt-get install -y docker-ce
-          sudo usermod -aG docker $USER
-          sudo systemctl enable docker
-          sudo systemctl start docker
+          if ! command -v docker &> /dev/null
+          then
+            echo "Docker not found, installing..."
+            sudo apt-get update
+            sudo apt-get install -y apt-transport-https ca-certificates curl software-properties-common
+            curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
+            sudo add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) stable"
+            sudo apt-get update
+            sudo apt-get install -y docker-ce
+            sudo usermod -aG docker $USER
+            sudo systemctl enable docker
+            sudo systemctl start docker
+          else
+            echo "Docker is already installed"
+          fi
           EOF
 
       # Passo 8: Carregar a imagem Docker no Droplet e executar o container
@@ -70,8 +76,13 @@ jobs:
           echo "${DROPLET_SSH_KEY}" > /tmp/key
           chmod 600 /tmp/key
           ssh -o StrictHostKeyChecking=no -i /tmp/key "${{ secrets.DROPLET_USERNAME }}"@"${{ secrets.DROPLET_HOST }}" << 'EOF'
-          docker load -i /home/${{ secrets.DROPLET_USERNAME }}/image.tar
-          docker stop myapp || true
-          docker rm myapp || true
-          docker run -d --name myapp -p 80:3000 myapp:latest
+          if [ -f /home/${{ secrets.DROPLET_USERNAME }}/image.tar ]; then
+            docker load -i /home/${{ secrets.DROPLET_USERNAME }}/image.tar
+            docker stop myapp || true
+            docker rm myapp || true
+            docker run -d --name myapp -p 80:3000 myapp:latest
+          else
+            echo "image.tar not found"
+            exit 1
+          fi
           EOF
