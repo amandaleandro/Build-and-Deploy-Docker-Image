@@ -35,5 +35,3 @@ Para usar este fluxo de trabalho em seu próprio projeto, siga estas etapas:
 Se você encontrar problemas ou tiver sugestões para melhorar este fluxo de trabalho, sinta-se à vontade para abrir uma issue ou enviar um pull request. Sua contribuição é muito bem-vinda!
 
 ---
-
-Sinta-se à vontade para ajustar o README conforme necessário e adicionar informações adicionais específicas ao seu projeto!
