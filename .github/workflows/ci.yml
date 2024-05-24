@@ -37,14 +37,14 @@ jobs:
         run: |
           IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}
           IMAGE_TAG=${{ env.DOCKER_TAG_NAME }}
-          docker build -t teste:$v1 -f my-app/dockerfile my-app
+          docker build -t teste:v1 -f my-app/dockerfile my-app
 
       # Passo 7: Salvar a imagem Docker em um arquivo tar
       - name: Save Docker image to tar file
         run: |
           IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}
           IMAGE_TAG=${{ env.DOCKER_TAG_NAME }}
-          docker save teste:$v1 -o image.tar
+          docker save teste:v1 -o image.tar
 
       # Passo 8: Copiar a imagem Docker para o Droplet
       - name: Copy Docker image to Droplet
@@ -63,5 +63,5 @@ jobs:
           IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}
           IMAGE_TAG=${{ env.DOCKER_TAG_NAME }}
           docker load -i /home/image.tar
-          docker tag teste:$v1 teste:latest
+          docker tag teste:v1 teste:latest
           EOF
