@@ -39,14 +39,14 @@ jobs:
       # Passo 6: Construir a imagem Docker
       - name: Build Docker image
         run: |
-          IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}
+          IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}
           IMAGE_TAG=${{ env.GITHUB_SHA_SHORT }}
           docker build -t $IMAGE_NAME:$IMAGE_TAG -f my-app/dockerfile my-app
 
       # Passo 7: Salvar a imagem Docker em um arquivo tar
       - name: Save Docker image to tar file
         run: |
-          IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}
+          IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}
           IMAGE_TAG=${{ env.GITHUB_SHA_SHORT }}
           docker save $IMAGE_NAME:$IMAGE_TAG -o image.tar
 
@@ -64,7 +64,7 @@ jobs:
       - name: Load Docker image on Droplet
         run: |
           ssh -i "${{ secrets.DROPLET_SSH_KEY }}" "${{ secrets.DROPLET_USERNAME }}"@"${{ secrets.DROPLET_HOST }}" << 'EOF'
-          IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}
+          IMAGE_NAME=${{ env.DOCKER_IMAGE_NAME }}
           IMAGE_TAG=${{ env.GITHUB_SHA_SHORT }}
           docker load -i /home/image.tar
           docker tag $IMAGE_NAME:$IMAGE_TAG $IMAGE_NAME:latest
