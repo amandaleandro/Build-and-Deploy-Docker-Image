@@ -63,7 +63,7 @@ jobs:
       # Passo 9: Carregar a imagem Docker no Droplet
       - name: Load Docker image on Droplet
         run: |
-          ssh -i (echo "${{ secrets.DROPLET_USERNAME }}")@${{ secrets.DROPLET_HOST }} << 'EOF' 
+          ssh -i <(echo "${{ secrets.DROPLET_PRIVATE_KEY }}") "${{ secrets.DROPLET_USERNAME }}"@"${{ secrets.DROPLET_HOST }}" << 'EOF'
           IMAGE_NAME=${{ secrets.DOCKER_IMAGE_NAME }}
           IMAGE_TAG=${{ env.GITHUB_SHA_SHORT }}
           docker load -i /home/image.tar
